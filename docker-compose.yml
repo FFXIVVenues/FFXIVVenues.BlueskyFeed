@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: FFXIVVenues.BlueskyFeed
+    image: ffxivvenues/ffxivvenues.blueskyfeed:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      FEEDGEN_LISTENHOST: "localhost"
+      FEEDGEN_PORT: 3000
+      FEEDGEN_SQLITE_LOCATION: "/app/data/feed.db"
+      FEEDGEN_SUBSCRIPTION_ENDPOINT: "wss://bsky.network"
+      FEEDGEN_HOSTNAME: "ffxivvenues.com"
+      FEEDGEN_PUBLISHER_DID: "did:plc:tankslilh5g4mzq72w5emqm7"
+      FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY: 3000
+    volumes:
+      - feed-data:/app/data:rw
+
+volumes:
+  feed-data:
+    name: FFXIVVenues.BlueskyFeed.Data
