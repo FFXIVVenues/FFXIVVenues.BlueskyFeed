@@ -1,5 +1,7 @@
 import { OutputSchema as RepoEvent, isCommit } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
+import { tags } from './tags'
+import { handles } from './handles'
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
@@ -9,11 +11,8 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) =>
-        create.record.tags?.some((tag) =>
-          tag === 'ffxivvenues' || tag === 'ffxivvenue' ||
-          tag === 'xivvenues' || tag == 'xivvenue' ||
-          tag === 'ffxivclubbing' || tag === 'ffxivclub' ||
-          tag === 'ffxivparty' || 'ffxivnightlife'))
+        create.record.tags?.some(tags.includes) ||
+        handles.includes(create.author))
       .map((create) => ({
           uri: create.uri,
           cid: create.cid,
