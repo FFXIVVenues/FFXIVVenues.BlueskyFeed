@@ -8,4 +8,4 @@ FROM node:18
 WORKDIR /app
 COPY --from=build /app/dist ./
 EXPOSE 3000
-CMD ["node", "start"]
+CMD ["node", "."]
