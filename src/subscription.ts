@@ -7,17 +7,22 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
 
-    const ops = await getOpsByType(evt)
+    const ops = await getOpsByType(evt);
+    const taggedCreates = ops.posts.creates.filter(c =>
+      tags.some(t => c.record.text.includes(t)) || handles.includes(c.author));
+
+    for (const post of taggedCreates) {
+      console.log(post.record.text);
+      console.log(post.author);
+      console.log("\n");
+    }
+
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
-    const postsToCreate = ops.posts.creates
-      .filter((create) =>
-        create.record.tags?.some(tags.includes) ||
-        handles.includes(create.author))
-      .map((create) => ({
-          uri: create.uri,
-          cid: create.cid,
-          indexedAt: new Date().toISOString(),
-        }));
+    const postsToCreate = taggedCreates.map(c => ({
+        uri: c.uri,
+        cid: c.cid,
+        indexedAt: new Date().toISOString(),
+      }));
 
     if (postsToDelete.length > 0) {
       await this.db

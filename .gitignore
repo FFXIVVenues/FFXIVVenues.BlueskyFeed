@@ -132,3 +132,6 @@ dist
 # intellij
 .idea/
 *.iml
+
+# feed data
+data/
